@@ -5,10 +5,84 @@ import os
 import io
 import json
 from datetime import datetime
+
 # Load environment variables from .env file
-dotenv.load_dotenv()
+dotenv.load_dotenv('.env')
+# Also try to load production env file if it exists
+if os.path.exists('.env.prod.dokploy'):
+    dotenv.load_dotenv('.env.prod.dokploy')
 
 class S3Client:
+    """
+        Esta clase proporciona una interfaz simplificada para realizar operaciones comunes
+        con Amazon S3, incluyendo subida, descarga, listado y manipulación de objetos.
+        Soporta tanto S3 estándar como servicios compatibles con S3 (como MinIO).
+        Attributes:
+            s3: Cliente boto3 configurado para interactuar con S3.
+            Usage:
+            # Inicializar cliente
+            s3_client = S3Client(
+                endpoint_url="https://s3.amazonaws.com",
+                access_key="your-access-key",
+                secret_key="your-secret-key"
+            # Subir archivo
+            s3_client.upload_file("local_file.txt", "my-bucket", "remote_file.txt")
+            # Listar objetos
+            objects = s3_client.list_objects("my-bucket")
+            # Obtener contenido
+            content = s3_client.get_object_content("my-bucket", "file.txt")
+        Notes:
+            - Las credenciales pueden ser proporcionadas como parámetros o variables de entorno
+            - Variables de entorno soportadas: S3_ENDPOINT_URL, S3_ACCESS_KEY, S3_SECRET_KEY
+            - Los métodos incluyen manejo básico de errores con logging a consola
+            - Compatible con servicios S3 estándar y compatibles (MinIO, DigitalOcean Spaces, etc.)
+        Methods:
+            __init__(endpoint_url=None, access_key=None, secret_key=None, region_name="us-east-1"):
+                Inicializa el cliente S3 con las credenciales y configuración especificadas.
+            upload_file(file_path, bucket_name, object_name):
+                Sube un archivo local a S3.
+            download_file(bucket_name, object_name, file_path):
+                Descarga un objeto de S3 a un archivo local.
+            list_objects(bucket_name, prefix=""):
+                Lista objetos en un bucket con un prefijo opcional.
+            create_bucket(bucket_name):
+                Crea un nuevo bucket en S3.
+            delete_object(bucket_name, object_name):
+                Elimina un objeto específico de S3.
+            get_object_content(bucket_name, object_name):
+                Obtiene el contenido de un objeto como string (para archivos de texto).
+            get_object_content_bytes(bucket_name, object_name):
+                Obtiene el contenido de un objeto como bytes (para archivos binarios).
+            download_fileobj(bucket_name, object_name, fileobj):
+                Descarga un archivo directamente a un objeto file-like en memoria.
+            upload_from_string(content, bucket_name, object_name, content_type='text/plain'):
+                Sube contenido desde un string directamente a S3.
+            upload_from_bytes(content_bytes, bucket_name, object_name, content_type='application/octet-stream'):
+                Sube contenido desde bytes directamente a S3.
+            copy_object(source_bucket, source_key, dest_bucket, dest_key):
+                Copia un objeto de una ubicación a otra dentro de S3.
+            move_object(source_bucket, source_key, dest_bucket, dest_key):
+                Mueve un objeto (copia y elimina el original).
+            get_object_metadata(bucket_name, object_name):
+                Obtiene metadatos detallados de un objeto.
+            object_exists(bucket_name, object_name):
+                Verifica si un objeto existe en el bucket especificado.
+            get_object_size(bucket_name, object_name):
+                Obtiene el tamaño de un objeto en bytes.
+            list_objects_detailed(bucket_name, prefix="", max_keys=1000):
+                Lista objetos con información detallada incluyendo metadatos.
+            search_objects(bucket_name, search_term, prefix=""):
+                Busca objetos que contengan un término específico en su nombre.
+            get_objects_by_extension(bucket_name, extension, prefix=""):
+                Filtra objetos por extensión de archivo.
+            print_file_content(bucket_name, object_name, max_lines=None):
+                Imprime el contenido de un archivo de texto en la consola.
+            get_file_info_summary(bucket_name, object_name):
+                Obtiene un resumen completo de información del archivo.
+            backup_object(bucket_name, object_name, backup_suffix="_backup"):
+                Crea una copia de respaldo de un objeto con timestamp.
+    """
+    
     def __init__(self, endpoint_url=None, access_key=None, secret_key=None, region_name="us-east-1"):
         self.s3 = boto3.client(
             's3',

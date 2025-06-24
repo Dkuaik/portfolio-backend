@@ -1,0 +1,29 @@
+{
+  "content": "# Proyecto GUIA ECOEMS – Creación y Enriquecimiento de Banco de Preguntas y Contenidos\n\n*Dic 2024 – Abr 2025*\n\n## Contexto\n\n**ECOEMS** es una plataforma digital que prepara a los aspirantes para el examen de ingreso a educación media superior en México (antes COMIPEMS). Mi misión fue diseñar y poblar un **banco robusto de reactivos** —preguntas, respuestas, metadatos, explicaciones y material de estudio— que permita prácticas adaptativas y análisis detallados del rendimiento de los estudiantes.\n\n## Objetivos clave\n\n- **Captura** de preguntas oficiales UNAM/ECOEMS y otras fuentes académicas confiables.\n- **Normalización** y depuración exhaustiva de datos para eliminar duplicados y errores.\n- **Generación de contenidos de estudio** alineados al temario oficial.\n- **Creación de nuevos reactivos** con LLMs manteniendo fidelidad curricular y nivel de dificultad controlado.\n\n## Adquisición de datos\n\n- **Scrapers especializados** en Python 3.11 (*BeautifulSoup*, *Selenium*) para portales protegidos como *Pruébate UNAM* y repositorios PDF/HTML.\n- Renderizado dinámico y extracción DOM para sortear restricciones de copiado sin violar términos de servicio.\n- Extracción inicial: **≈ 7 000** Q&A crudos de 11 fuentes distintas.\n\n## Limpieza y normalización\n\n| Tarea                          | Técnica                                             | Resultado                                     |\n| ------------------------------ | --------------------------------------------------- | --------------------------------------------- |\n| Deduplicación exacta           | Hash SHA‑256 por cuerpo de pregunta                 | ‑58 % registros redundantes                   |\n| Deduplicación parcial          | Similitud Jaccard + *fuzzy clustering* (umbral 0.8) | +12 % colisiones resueltas                    |\n| Segmentación de bundles        | Regex + heurística de numeración                    | Preguntas individuales con contexto vinculado |\n| Corrección ortográfica         | spaCy + LanguageTool + revisión humana              | 100 % texto uniforme                          |\n| **Estandarización de temario** | Mapping UNAM‑IPN → IDs únicos                       | Contextualización de cada pregunta            |\n\n## Enriquecimiento con IA\n\n1. **Clasificación temática** → GPT‑4o (zero‑shot) validado con BERT fine‑tuned.\n2. **Etiquetado de dificultad** → Árbol de decisión entrenado en histórico de aciertos (RMSE 0.17).\n3. **Reescritura uniforme** → GPT‑4o *style‑transfer* (español neutro, ≤ 280 caracteres).\n4. **Generación de explicaciones** breves y detalladas para cada reactivo.\n5. **Integración OpenRouter** para orquestar modelos y optimizar coste‑rendimiento.\n\n## Generación de reactivos sintéticos\n\n- *Chain‑of‑Thought prompting* + validación automática produjo **1 200** preguntas originales.\n- Control de calidad: checker rule‑based (respuesta única, distractores plausibles) y revisión SME.\n\n## Despliegue\n\n- **CI/CD** con GitHub Actions para test, build y deploy continuo.\n- Pipelines de scraping, normalización y almacenamiento centralizado (PostgreSQL).\n- API REST para exponer reactivos y explicaciones a la plataforma web con Flask.\n\n## Impacto\n\n- **+230 %** incremento neto del banco de reactivos.\n- **‑70 %** reducción del tiempo de curación manual.\n- Implementación de prácticas adaptativas que ajustan dificultad en tiempo real.\n\n## Rol personal\n\n**Líder de IA y Automatización de Datos**\\\nDiseñé la arquitectura end‑to‑end, desarrollé scrapers y pipelines, entrené modelos, documenté el flujo y realicé formación al equipo editorial.\n\n> *Confirma cifras finales y enlaces sensibles antes de distribución externa.*\n\nlink del producto final https\\://app.guiaecoems.com/login\n\n",
+  "metadata": {
+    "key": "ecoems_project.md",
+    "filename": "ecoems_project.md",
+    "path": "",
+    "size_bytes": 3851,
+    "size_readable": "3.76 KB",
+    "last_modified": "2025-06-21 23:06:55.227000+00:00",
+    "content_length": 3709,
+    "word_count": 475,
+    "line_count": 66,
+    "has_content": true,
+    "metadata": {},
+    "preview": "# Proyecto GUIA ECOEMS – Creación y Enriquecimiento de Banco de Preguntas y Contenidos  *Dic 2024 – Abr 2025*  ## Contexto  **ECOEMS** es una platafor...",
+    "headers": [
+      "Proyecto GUIA ECOEMS – Creación y Enriquecimiento de Banco de Preguntas y Contenidos",
+      "Contexto",
+      "Objetivos clave",
+      "Adquisición de datos",
+      "Limpieza y normalización",
+      "Enriquecimiento con IA",
+      "Generación de reactivos sintéticos",
+      "Despliegue",
+      "Impacto",
+      "Rol personal"
+    ]
+  }
+}

@@ -3,7 +3,7 @@
 Script para listar todos los archivos en el bucket de portfolio
 """
 
-from src.services.s3.S3Client import S3Client
+from app.services.s3.S3Client import S3Client
 import os
 
 def main():
@@ -55,3 +55,18 @@ def main():
 
 if __name__ == "__main__":
     main()
+    # --- Bloque de prueba para guardar el primer archivo Markdown en JSON ---
+    from app.services.markdown_processor import MarkdownProcessor
+    import json
+
+    BUCKET_NAME = os.getenv("PORTFOLIO_BUCKET_NAME", "portfolio")
+    OUTPUT_FILE = "src/docs/md_file_structure.json"
+
+    processor = MarkdownProcessor(BUCKET_NAME)
+    archivos = processor.get_all_markdown_files()
+    if archivos:
+        primer_archivo = archivos[0]
+        with open(OUTPUT_FILE, "+w", encoding="utf-8") as f:
+            json.dump(primer_archivo, f, ensure_ascii=False, indent=2, default=str)
+    else:
+        print("❌ No se encontraron archivos Markdown en el bucket.")
