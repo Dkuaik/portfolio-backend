@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
     
     # CORS
-    ALLOWED_HOSTS: List[str] = ["*"]
+    ALLOWED_HOSTS: List[str] = ["*","http://localhost:3000", "http://localhost:8000", "http://localhost:9000"]
     ALLOWED_ORIGINS: Optional[str] = None
     
     # Security

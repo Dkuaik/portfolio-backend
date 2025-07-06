@@ -18,8 +18,8 @@ class DocumentChunk(BaseModel):
 class SearchRequest(BaseModel):
     """Search request model"""
     query: str = Field(..., description="Search query", min_length=1, max_length=1000)
-    max_results: Optional[int] = Field(5, description="Maximum number of results", ge=1, le=20)
-    threshold: Optional[float] = Field(0.7, description="Similarity threshold", ge=0.0, le=1.0)
+    max_results: int = Field(5, description="Maximum number of results", ge=1, le=20)
+    threshold: float = Field(0.7, description="Similarity threshold", ge=0.0, le=1.0)
 
 class SearchResponse(BaseModel):
     """Search response model"""
@@ -37,7 +37,7 @@ class EmbeddingStats(BaseModel):
 
 class ProcessEmbeddingsRequest(BaseModel):
     """Process embeddings request model"""
-    force_update: Optional[bool] = Field(False, description="Force update all embeddings")
+    force_update: bool = Field(False, description="Force update all embeddings")
 
 class ProcessEmbeddingsResponse(BaseModel):
     """Process embeddings response model"""
@@ -59,3 +59,54 @@ class ErrorResponse(BaseModel):
     message: str = Field(..., description="Error message")
     details: Optional[Dict[str, Any]] = Field(None, description="Additional error details")
     timestamp: datetime = Field(..., description="Error timestamp")
+
+class ChatRequest(BaseModel):
+    """Chat request with embeddings context"""
+    query: str = Field(..., description="User query/question", min_length=1, max_length=2000)
+    context_query: Optional[str] = Field(None, description="Specific query for context search (if different from main query)")
+    max_context_results: int = Field(3, description="Maximum context chunks to include", ge=1, le=10)
+    similarity_threshold: float = Field(0.3, description="Similarity threshold for context", ge=0.0, le=1.0)
+    model: str = Field("google/gemini-2.5-flash-lite-preview-06-17", description="Model to use for chat")
+    temperature: float = Field(0.7, description="Response randomness", ge=0.0, le=2.0)
+    max_tokens: int = Field(1000, description="Maximum tokens in response", ge=100, le=4000)
+
+class ContextChunk(BaseModel):
+    """Context chunk model"""
+    source: str = Field(..., description="Source document")
+    content_preview: str = Field(..., description="Preview of the content chunk")
+    score: float = Field(..., description="Similarity score")
+
+class ContextSource(BaseModel):
+    """Context source information"""
+    source: str = Field(..., description="Source document key for context")
+    key: str = Field(..., description="Document key")
+    score: float = Field(..., description="Similarity score")
+
+class ChatResponse(BaseModel):
+    """Chat response with context information"""
+    query: str = Field(..., description="Original user query")
+    response: str = Field(..., description="AI response")
+    context_used: Dict[str, Any] = Field(..., description="Information about context used")
+    execution_time: float = Field(..., description="Total execution time")
+    success: bool = Field(..., description="Whether the request was successful")
+    error: Optional[str] = Field(None, description="Error message if any")
+
+class ChatContextResponse(BaseModel):
+    """Chat context response model"""
+    query: str = Field(..., description="Original user query")
+    context_chunks: List[ContextChunk] = Field(..., description="List of context chunks")
+    context_sources: List[ContextSource] = Field(..., description="Source details for each chunk")
+    total_chunks: int = Field(..., description="Total number of context chunks")
+    execution_time: float = Field(..., description="Time taken to retrieve context")
+    success: bool = Field(..., description="Whether context retrieval was successful")
+    error: Optional[str] = Field(None, description="Error message if any")
+
+class OpenRouterClient(BaseModel):
+    """OpenRouter client configuration"""
+    model: str = Field("google/gemini-2.5-flash-lite-preview-06-17", description="Model to use for chat")
+    temperature: float = Field(0.7, description="Temperature for response generation", ge=0.0, le=2.0)
+    max_tokens: int = Field(1000, description="Maximum tokens in response", ge=100, le=4000)
+    
+    class Config:
+        """Pydantic configuration"""
+        extra = "forbid"  # Disallow extra fields
