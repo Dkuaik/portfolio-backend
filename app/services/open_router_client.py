@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 import time
 from typing import List, Optional, Dict, Any
 
-load_dotenv('.apikeys')  # Cambiar al nuevo nombre del archivo
+load_dotenv('.env')  # Cambiar al nuevo nombre del archivo
 
 class OpenRouterAPI:
     def __init__(self, api_key=None, model="google/gemini-2.5-flash-lite-preview-06-17", 
@@ -24,7 +24,7 @@ class OpenRouterAPI:
         :param frequency_penalty: Penalización por frecuencia de tokens (por defecto 0).
         :param presence_penalty: Penalización por presencia de tokens (por defecto 0).
         """
-        self.api_key = api_key or os.getenv("OPENROUTER_API_KEY") or "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" 
+        self.api_key = api_key or os.getenv("OPENROUTER_API_KEY") 
         if not self.api_key:
             raise ValueError("API key must be provided either as parameter or in .env file")
         self.model = model
