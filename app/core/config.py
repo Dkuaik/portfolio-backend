@@ -1,6 +1,7 @@
 from pydantic_settings import BaseSettings
 from typing import List, Optional
 import os
+from pathlib import Path
 
 class Settings(BaseSettings):
     """Application settings"""
@@ -26,7 +27,13 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = "INFO"
     
     # OpenAI settings
-    OPENAI_API_KEY: Optional[str] = os.getenv("OPENAI_API_KEY")
+    OPENAI_API_KEY: Optional[str] = None
+    
+    # OpenRouter settings
+    OPENROUTER_API_KEY: Optional[str] = None
+    OPENROUTER_MODEL: str = "google/gemini-2.5-flash-lite-preview-06-17"
+    OPENROUTER_MAX_TOKENS: int = 1000
+    OPENROUTER_TEMPERATURE: float = 0.7
     
     # S3 settings
     S3_ENDPOINT_URL: Optional[str] = None
@@ -49,7 +56,9 @@ class Settings(BaseSettings):
     SIMILARITY_THRESHOLD: float = 0.7
     
     class Config:
-        env_file = ".env"
+        # Priority order: .env (local) -> .env.prod.dokploy (production)
+        env_file = [".env", ".env.prod.dokploy"]
+        env_file_encoding = "utf-8"
         case_sensitive = True
         extra = "allow"  # Allow extra fields
 
