@@ -2,38 +2,27 @@ import requests
 import json
 import logging
 import os
-from dotenv import load_dotenv
 import time
 from typing import List, Optional, Dict, Any
-
-load_dotenv('.env')  # Cambiar al nuevo nombre del archivo
+from app.core.config import settings  # Importar configuración centralizada
 
 class OpenRouterAPI:
-    def __init__(self, api_key=None, model="google/gemini-2.5-flash-lite-preview-06-17", 
-                 temperature=0.7, max_tokens=500, response_format=None, 
-                 top_p=1, frequency_penalty=0, presence_penalty=0):
+    def __init__(self, api_key=None, model=None, temperature=None, max_tokens=None, 
+                 response_format=None, top_p=None, frequency_penalty=None, presence_penalty=None):
         """
         Clase para realizar peticiones a la API de OpenRouter.
-        
-        :param api_key: Clave de autenticación para la API de OpenRouter.
-        :param model: Modelo de IA a utilizar. [Lista de modelos disponibles](https://openrouter.ai/models)
-        :param temperature: Grado de aleatoriedad en la respuesta (por defecto 0.7).
-        :param max_tokens: Número máximo de tokens en la respuesta (por defecto 500).
-        :param response_format: Formato de respuesta deseado (e.g., {"type": "json_object"})
-        :param top_p: Núcleo de probabilidad acumulativa para muestreo (por defecto 1).
-        :param frequency_penalty: Penalización por frecuencia de tokens (por defecto 0).
-        :param presence_penalty: Penalización por presencia de tokens (por defecto 0).
         """
-        self.api_key = api_key or os.getenv("OPENROUTER_API_KEY") 
+        self.api_key = api_key or settings.OPENROUTER_API_KEY
         if not self.api_key:
-            raise ValueError("API key must be provided either as parameter or in .env file")
-        self.model = model
-        self.temperature = temperature
-        self.max_tokens = max_tokens
+            raise ValueError("API key must be provided either as parameter or in settings")
+
+        self.model = model or settings.OPENROUTER_MODEL
+        self.temperature = temperature or settings.OPENROUTER_TEMPERATURE
+        self.max_tokens = max_tokens or settings.OPENROUTER_MAX_TOKENS
         self.response_format = response_format
-        self.top_p = top_p
-        self.frequency_penalty = frequency_penalty
-        self.presence_penalty = presence_penalty
+        self.top_p = top_p or 1
+        self.frequency_penalty = frequency_penalty or 0
+        self.presence_penalty = presence_penalty or 0
         self.url = "https://openrouter.ai/api/v1/chat/completions"
         self.headers = {
             "Authorization": f"Bearer {self.api_key}",

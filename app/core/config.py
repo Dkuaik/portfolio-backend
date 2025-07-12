@@ -17,8 +17,15 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
     
     # CORS
-    ALLOWED_HOSTS: List[str] = ["*","http://localhost:3000", "http://localhost:8000", "http://localhost:9000"]
-    ALLOWED_ORIGINS: Optional[str] = None
+    # ALLOWED_HOSTS: List[str] = []
+    ALLOWED_ORIGINS: str = "*"
+    
+    @property
+    def allowed_origins_list(self) -> List[str]:
+        """Convert comma-separated origins string to list"""
+        if not self.ALLOWED_ORIGINS:
+            return ["*"]
+        return [origin.strip() for origin in self.ALLOWED_ORIGINS.split(",")]
     
     # Security
     SECRET_KEY: Optional[str] = None
@@ -57,7 +64,7 @@ class Settings(BaseSettings):
     
     class Config:
         # Priority order: .env (local) -> .env.prod.dokploy (production)
-        env_file = [".env", ".env.prod.dokploy"]
+        env_file = [".env"]
         env_file_encoding = "utf-8"
         case_sensitive = True
         extra = "allow"  # Allow extra fields

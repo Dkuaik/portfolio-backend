@@ -278,12 +278,13 @@ class MarkdownProcessor:
             return "0 B"
         
         size_names = ["B", "KB", "MB", "GB"]
+        size = float(size_bytes)
         i = 0
-        while size_bytes >= 1024 and i < len(size_names) - 1:
-            size_bytes /= 1024.0
+        while size >= 1024 and i < len(size_names) - 1:
+            size /= 1024
             i += 1
         
-        return f"{size_bytes:.2f} {size_names[i]}"
+        return f"{size:.2f} {size_names[i]}"
     
     def _get_content_preview(self, content: str, max_length: int = 150) -> str:
         """Obtiene un preview del contenido"""
