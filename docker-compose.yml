@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  portfolios-backend:
+    build: .
+    container_name: portfolios-backend-dev
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONPATH=/app
+      - ENVIRONMENT=development
+    volumes:
+      # Montar código fuente para desarrollo con hot reload
+      - .:/app
+      # Montar vectorstores para persistencia
+      - ./vectorstores:/app/vectorstores
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    networks:
+      - portfolio-network-dev
+    # Configuración más permisiva para desarrollo
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
+        reservations:
+          memory: 256M
+          cpus: '0.1'
+
+networks:
+  portfolio-network-dev:
+    driver: bridge

@@ -81,3 +81,50 @@ Este backend permite crear un portafolio inteligente donde los visitantes pueden
 - Navegar tu contenido de forma intuitiva
 
 **Ejemplo**: Un visitante pregunta *"¿Qué proyectos has hecho con React?"* y el sistema encuentra automáticamente todos los documentos relevantes, incluso si no mencionan "React" explícitamente pero hablan de "frontend" o "componentes".
+
+## 🐳 Docker Deployment
+
+### Desarrollo Local
+
+1. **Configurar variables de entorno**:
+   ```bash
+   cp .env.example .env
+   # Editar .env con tus valores
+   ```
+
+2. **Build y run con Docker**:
+   ```bash
+   # Opción 1: Script automatizado
+   ./scripts/run_docker.sh
+   
+   # Opción 2: Docker Compose
+   docker-compose up --build
+   
+   # Opción 3: Comandos manuales
+   docker build -t portfolios-backend:latest .
+   docker run --env-file .env -p 8000:8000 portfolios-backend:latest
+   ```
+
+3. **Acceder a la API**:
+   - API: http://localhost:8000
+   - Documentación: http://localhost:8000/docs
+   - Health Check: http://localhost:8000/api/v1/health
+
+### Producción con Dokploy
+
+1. **Configurar variables en Dokploy**:
+   - Usar las variables definidas en `.env.prod.dokploy`
+   - Formato: `{{project.VARIABLE_NAME}}`
+
+2. **Deploy**:
+   ```bash
+   docker-compose -f docker-compose.prod.yml up -d
+   ```
+
+### Características del Dockerfile
+
+- **Multi-stage build** - Optimizado para producción
+- **UV package manager** - Instalación ultra-rápida de dependencias  
+- **Non-root user** - Seguridad mejorada
+- **Health checks** - Monitoreo automático
+- **Layer caching** - Builds incrementales eficientes
